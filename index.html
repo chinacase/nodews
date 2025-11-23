@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>极简导航</title>
-    <!-- 引入Font Awesome图标（用于导航图标和功能按钮） -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
-        /* 全局样式重置与基础配置 */
         * {
             margin: 0;
             padding: 0;
@@ -32,7 +30,7 @@
         }
 
         .header-container {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -105,33 +103,40 @@
             background-color: #2db65b;
         }
 
-        /* 导航卡片容器 */
+        /* 核心修复：强制网格布局生效 */
         main {
             flex: 1;
             padding: 0 1rem;
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
             margin-bottom: 2rem;
+            width: 100%;
         }
 
         .nav-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 1.2rem;
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+            gap: 1.5rem !important;
+            padding: 0.5rem 0 !important;
+            width: 100% !important;
+            grid-auto-rows: auto !important;
         }
 
+        /* 导航卡片样式（适配ICO图标） */
         .nav-card {
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            padding: 1.5rem 1rem;
+            padding: 1.8rem 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.8rem;
+            gap: 1rem;
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
+            aspect-ratio: 1/1;
+            width: 100%;
         }
 
         .nav-card:hover {
@@ -139,25 +144,32 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
 
-        .nav-icon {
-            font-size: 2rem;
-            color: #2c6ecb;
+        /* 网站ICO图标样式 */
+        .nav-ico {
+            width: 2.2rem;  /* 与原图标大小一致 */
+            height: 2.2rem;
+            object-fit: contain; /* 防止ICO变形 */
+            flex-shrink: 0;
+            border-radius: 4px; /* 轻微圆角更美观 */
         }
 
         .nav-name {
             font-size: 1rem;
             font-weight: 500;
             text-align: center;
+            line-height: 1.2;
+            word-break: break-word;
         }
 
         .delete-btn {
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
+            top: 0.8rem;
+            right: 0.8rem;
             color: #ff4d4f;
             opacity: 0;
             cursor: pointer;
             transition: opacity 0.3s;
+            font-size: 0.9rem;
         }
 
         .nav-card:hover .delete-btn {
@@ -169,10 +181,11 @@
             text-align: center;
             color: #909399;
             font-size: 1.1rem;
-            padding: 4rem 0;
+            padding: 6rem 0;
+            width: 100%;
         }
 
-        /* 模态框样式（添加导航） */
+        /* 模态框样式（简化：移除图标类名输入） */
         .modal-mask {
             position: fixed;
             top: 0;
@@ -286,23 +299,34 @@
         }
 
         /* 响应式适配 */
-        @media (max-width: 768px) {
-            .title {
-                font-size: 1.5rem;
-            }
-
+        @media (max-width: 375px) {
             .nav-container {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+                gap: 1rem !important;
             }
+            .nav-ico {
+                width: 1.8rem;
+                height: 1.8rem;
+            }
+            .nav-name {
+                font-size: 0.9rem;
+            }
+        }
 
-            .nav-icon {
-                font-size: 1.8rem;
+        @media (min-width: 768px) and (max-width: 1200px) {
+            .nav-container {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .nav-container {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 头部 -->
     <header>
         <div class="header-container">
             <h1 class="title">
@@ -322,15 +346,14 @@
         </div>
     </header>
 
-    <!-- 主体导航区域 -->
     <main>
         <div class="nav-container" id="navContainer">
-            <!-- 导航卡片由JS动态生成 -->
+            <!-- 动态生成导航卡片 -->
         </div>
         <div class="empty-tip" id="emptyTip">暂无导航，点击「添加导航」创建你的第一个导航吧～</div>
     </main>
 
-    <!-- 添加导航模态框 -->
+    <!-- 模态框：移除图标类名输入项，简化表单 -->
     <div class="modal-mask" id="modalMask">
         <div class="modal-box">
             <h2 class="modal-title">添加新导航</h2>
@@ -344,11 +367,6 @@
                     <input type="url" id="navUrl" placeholder="例如：https://www.baidu.com" required>
                     <p class="form-tips">请输入完整网址，以http/https开头</p>
                 </div>
-                <div class="form-item">
-                    <label for="navIcon">图标类名</label>
-                    <input type="text" id="navIcon" placeholder="例如：fa-solid fa-globe" value="fa-solid fa-globe">
-                    <p class="form-tips">从Font Awesome官网复制图标类名</p>
-                </div>
                 <div class="modal-btns">
                     <button type="button" class="cancel-btn" id="cancelBtn">取消</button>
                     <button type="submit" class="confirm-btn">确认添加</button>
@@ -357,7 +375,6 @@
         </div>
     </div>
 
-    <!-- 底部 -->
     <footer>
         <p>极简导航 © 2025 | 本地存储，数据仅保存在你的设备中</p>
     </footer>
@@ -371,22 +388,39 @@
         const navContainer = document.getElementById('navContainer');
         const emptyTip = document.getElementById('emptyTip');
 
-        // 预设常用工具导航数据
+        // 预设常用工具导航（仅保留名称和网址，ICO自动获取）
         const defaultNavList = [
-            { name: 'GitHub', url: 'https://github.com', icon: 'fa-brands fa-github' },
-            { name: 'MDN文档', url: 'https://developer.mozilla.org/zh-CN/', icon: 'fa-solid fa-book-open' },
-            { name: 'Stack Overflow', url: 'https://stackoverflow.com', icon: 'fa-brands fa-stack-overflow' },
-            { name: '菜鸟工具', url: 'https://c.runoob.com', icon: 'fa-solid fa-code' },
-            { name: 'Postman', url: 'https://www.postman.com', icon: 'fa-solid fa-paper-plane' },
-            { name: 'Figma', url: 'https://www.figma.com', icon: 'fa-brands fa-figma' },
-            { name: '在线JSON解析', url: 'https://www.json.cn', icon: 'fa-solid fa-file-code' },
-            { name: 'Can I Use', url: 'https://caniuse.com', icon: 'fa-solid fa-check-circle' }
+            { name: 'GitHub', url: 'https://github.com' },
+            { name: 'MDN文档', url: 'https://developer.mozilla.org/zh-CN/' },
+            { name: 'Stack Overflow', url: 'https://stackoverflow.com' },
+            { name: '菜鸟工具', url: 'https://c.runoob.com' },
+            { name: 'Postman', url: 'https://www.postman.com' },
+            { name: 'Figma', url: 'https://www.figma.com' },
+            { name: '在线JSON解析', url: 'https://www.json.cn' },
+            { name: 'Can I Use', url: 'https://caniuse.com' },
+            { name: '在线PS', url: 'https://www.uupoop.com' },
+            { name: 'Notion', url: 'https://www.notion.so' },
+            { name: '掘金', url: 'https://juejin.cn' },
+            { name: '力扣', url: 'https://leetcode.cn' }
         ];
 
-        // 从本地存储获取导航数据，若无则返回预设数据
+        // 默认ICO（Base64编码的极简地球图标，避免外部资源依赖）
+        const defaultIco = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzIiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjcyIiBoZWlnaHQ9IjcyIiByeD0iMTgiIGZpbGw9IiMyYzZlY2IiLz4KPHBhdGggZD0iTTQ0IDIwQzQ0IDEwLjk2NjQgMzYuMDMzNiAzIDI2IDNDMTUuOTYzNCAzIDggMTAuOTY2NCA4IDIwVjUyQzggNjEuMDMzNiAxNS45NjM0IDY5IDI2IDY5QzM2LjAzMzYgNjkgNDQgNjEuMDMzNiA0NCA1MlYyM000NCA1MkM0NCA1Ny41MjI4IDQwLjUyMjggNjEgMzYgNjFIMjZDMjEuNDc3MiA2MSAxOCA1Ny41MjI4IDE4IDUyVjIwQzE4IDE0LjQ3NzIgMjEuNDc3MiAxMSAyNiAxMUgzNkM0MC41MjI4IDExIDQ0IDE0LjQ3NzIgNDQgMjBWMzUiLz4KPC9zdmc+Cg==';
+
+        // 解析URL，拼接网站favicon.ico地址
+        function getFaviconUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                // 拼接根域名的favicon.ico地址（通用做法）
+                return `${urlObj.protocol}//${urlObj.hostname}/favicon.ico`;
+            } catch (e) {
+                return defaultIco;
+            }
+        }
+
+        // 从本地存储获取导航数据
         function getNavList() {
             const navStr = localStorage.getItem('navList');
-            // 本地存储无数据时，返回预设的常用工具导航
             return navStr ? JSON.parse(navStr) : defaultNavList;
         }
 
@@ -395,43 +429,46 @@
             localStorage.setItem('navList', JSON.stringify(navList));
         }
 
-        // 渲染导航卡片
+        // 渲染导航卡片（核心：加载网站ICO，失败则显示默认）
         function renderNavCards() {
             const navList = getNavList();
-            // 隐藏/显示空状态提示（预设数据存在时不会显示）
             emptyTip.style.display = navList.length === 0 ? 'block' : 'none';
-            // 清空容器
             navContainer.innerHTML = '';
-            // 遍历生成卡片
+
             navList.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = 'nav-card';
-                // 修复图标class重复的问题：原代码写了两个class属性，合并为一个
+                const faviconUrl = getFaviconUrl(item.url);
+
+                // 生成带ICO的卡片（onerror触发默认图标）
                 card.innerHTML = `
-                    <i class="${item.icon} nav-icon"></i>
+                    <img class="nav-ico" src="${faviconUrl}" onerror="this.src='${defaultIco}'" alt="${item.name}图标">
                     <p class="nav-name">${item.name}</p>
                     <i class="fa-solid fa-times delete-btn" data-index="${index}"></i>
                 `;
-                // 点击卡片跳转网址
+
+                // 点击卡片跳转
                 card.addEventListener('click', (e) => {
                     if (!e.target.classList.contains('delete-btn')) {
                         window.open(item.url, '_blank');
                     }
                 });
-                // 点击删除按钮删除导航
+
+                // 点击删除
                 const deleteBtn = card.querySelector('.delete-btn');
                 deleteBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // 阻止冒泡
+                    e.stopPropagation();
                     deleteNav(index);
                 });
+
                 navContainer.appendChild(card);
             });
         }
 
         // 添加导航
-        function addNav(name, url, icon) {
+        function addNav(name, url) {
             const navList = getNavList();
-            navList.push({ name, url, icon });
+            navList.push({ name, url });
             saveNavList(navList);
             renderNavCards();
         }
@@ -444,38 +481,30 @@
             renderNavCards();
         }
 
-        // 打开模态框
+        // 模态框操作
         addNavBtn.addEventListener('click', () => {
             modalMask.classList.add('show');
-            // 重置表单
             navForm.reset();
-            document.getElementById('navIcon').value = 'fa-solid fa-globe';
         });
 
-        // 关闭模态框
         cancelBtn.addEventListener('click', () => {
             modalMask.classList.remove('show');
         });
 
-        // 点击模态框遮罩层关闭
         modalMask.addEventListener('click', (e) => {
-            if (e.target === modalMask) {
-                modalMask.classList.remove('show');
-            }
+            if (e.target === modalMask) modalMask.classList.remove('show');
         });
 
-        // 提交表单添加导航
+        // 表单提交（简化：仅提交名称和网址）
         navForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // 阻止表单默认提交
+            e.preventDefault();
             const navName = document.getElementById('navName').value.trim();
             const navUrl = document.getElementById('navUrl').value.trim();
-            const navIcon = document.getElementById('navIcon').value.trim();
-            // 添加导航并关闭模态框
-            addNav(navName, navUrl, navIcon);
+            addNav(navName, navUrl);
             modalMask.classList.remove('show');
         });
 
-        // 页面加载时渲染导航
+        // 页面加载渲染
         window.addEventListener('load', renderNavCards);
     </script>
 </body>
